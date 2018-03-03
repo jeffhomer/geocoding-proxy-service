@@ -24,7 +24,11 @@ class hereAPI():
         
         request = urllib.request.Request(requestString)
         
-        response = json.loads(urllib.request.urlopen(request).read().decode())
+        try:
+            response = json.loads(urllib.request.urlopen(request).read().decode())
+        except:
+            #ERROR
+            return -1
         
         # Get first location
         if not response['Response']['View']:
@@ -36,7 +40,7 @@ class hereAPI():
         
         # Return display location
         location = response['Response']['View'][0]['Result'][0]['Location']['DisplayPosition']        
-        return location
+        return [location['Latitude'],location['Longitude']]
     
 class googleAPI():
     Key = "AIzaSyBwLb_44aG_osoWJWbP06qwtB2eJN4WbnE"
@@ -49,7 +53,11 @@ class googleAPI():
         
         request = urllib.request.Request(requestString)
         
-        response = json.loads(urllib.request.urlopen(request).read().decode())
+        try:
+            response = json.loads(urllib.request.urlopen(request).read().decode())
+        except:
+            #ERROR
+            return -1
         
         # Get first location
         if not response['results']:
@@ -61,4 +69,4 @@ class googleAPI():
         
         # Return display location
         location = response['results'][0]['geometry']['location']        
-        return location
+        return [location['lat'],location['lng']]

@@ -36,9 +36,16 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     def searchAddress(self,parsedUrl):
         # Parse query for search string
         queries = urllib.parse.parse_qs(parsedUrl.query)
-        if 'address' in queries:
-            searchString = urllib.parse.quote_plus(queries['address'][0])
-            print(GeolocationExtractor.getLocation(searchString))
-        else:
-            print(0)        
-        self.wfile.write(json.dumps({"latitude": 0, "longitude": 0}).encode('utf-8'))
+        if not 'address' in queries:
+            # ERROR: invalid query
+            self.wfile.write(json.dumps({"Message": "Invalid query. Please make sure to follow the format 'address=SEARCHTEXT' and that SEARCHTEXT is plus-encoded"}).encode('utf-8'))
+            return
+        
+        # Get location from one of the APIs
+        searchString = urllib.parse.quote_plus(queries['address'][0])
+        location = GeolocationExtractor.getLocation(searchString)      
+        if location == -1:
+            # ERROR: cannot get location
+            self.wfile.write(json.dumps({"Message": "Could not retrieve location from any API. Please make sure you are connected to the internet."}).encode('utf-8'))
+            return
+        self.wfile.write(json.dumps({"latitude": location[0], "longitude": location[1]}).encode('utf-8'))
