@@ -12,7 +12,7 @@ Before using the geocoding proxy service, please ensure you are using Python 3.6
 ## How to Run the Service
 Open a command window or terminal in the directory containing **run_geolocating_service.py**.
 
-To run the geolocating service using default port 8000, run:
+To run the geolocating service using default port 8000, call run_geolocating_service without any arguments:
 ```
 > python run_geolocating_service
 ```
@@ -22,7 +22,7 @@ To select the port, use the first optional command-line argument [PORT]:
 > python run_geolocating_service [PORT]
 ```
 
-To mirror the client responses to the geolocating service, pass ```True``` to the second optional command-line argument [MIRROR_RESPONSES]:
+To mirror the client responses to the geolocating service, pass ```1``` to the second optional command-line argument [MIRROR_RESPONSES]:
 ```
 > python run_geolocating_service [PORT] [MIRROR_RESPONSES]
 ```
