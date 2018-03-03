@@ -14,17 +14,17 @@ Open a command window or terminal in the directory containing **run_geolocating_
 
 To run the geolocating service using default port 8000, call run_geolocating_service without any arguments:
 ```
-> python run_geolocating_service
+> python run_geolocating_service.py
 ```
 
 To select the port, use the first optional command-line argument [PORT]:
 ```
-> python run_geolocating_service [PORT]
+> python run_geolocating_service.py [PORT]
 ```
 
 To mirror the client responses to the geolocating service, pass ```1``` to the second optional command-line argument [MIRROR_RESPONSES]:
 ```
-> python run_geolocating_service [PORT] [MIRROR_RESPONSES]
+> python run_geolocating_service.py [PORT] [MIRROR_RESPONSES]
 ```
 
 To shut the service down safely, send an external request to the server as described in [Stop server](https://github.com/jeffhomer/geocoding-proxy-service/blob/master/README.md#stop-server).
