@@ -5,6 +5,7 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     """ HTTP request handler for geocoding service """
 
     def do_HEAD(self):
+        # Respond to a HEAD request
         self.send_response(200)
         self.send_header("Content-type", "application/json")
         self.end_headers()
@@ -36,6 +37,8 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         print("Server shut down by " + clientAddress)
         
     def searchAddress(self,parsedUrl):
+        # Get latitude and longitude of searched address
+        
         # Parse query for search string
         queries = urllib.parse.parse_qs(parsedUrl.query)
         if not 'address' in queries:
@@ -46,16 +49,18 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         # Get location from one of the APIs
         searchString = urllib.parse.quote_plus(queries['address'][0])
         location = GeolocationExtractor.getLocation(searchString)      
-        if location == -1:
+        if location.status == -1:
             # ERROR: cannot get location
-            self.wfile.write(json.dumps({"Message": "Could not retrieve location from any API. Please make sure you are connected to the internet."}).encode('utf-8'))
+            self.wfile.write(json.dumps({"Message": "Location could not be obtained using any of the implemented APIs. Ensure that you are connected to the internet."}).encode('utf-8'))
             return
-        self.wfile.write(json.dumps({"latitude": location[0], "longitude": location[1]}).encode('utf-8'))
+        self.wfile.write(json.dumps({"latitude": location.location[0], "longitude": location.location[1]}).encode('utf-8'))
         
     def checkStatus(self):
-        status = GeolocationExtractor.checkStatus()
-        for api in status:
-            if status[api] == -1:
+        # Check status of all APIs
+        location = GeolocationExtractor.checkStatus()
+        status={}
+        for api in location:
+            if location[api].status == -1:
                 status_i = "ERROR"
             else:
                 status_i = "OK"

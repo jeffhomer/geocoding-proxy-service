@@ -1,22 +1,36 @@
 import urllib.request, json
 
 class GeolocationExtractor():
-    """ Extract geolocation from first working API """
+    """ Generalized geolocation extractor """
     
     @classmethod
     def getLocation(self,searchString):
+        # Extract geolocation from first working API
         for apiservice in (hereAPI,googleAPI):
             location = apiservice.getLocation(searchString)
-            if not location == -1:
+            if not location.status == -1:
                 return location
         return location
     
     @classmethod
     def checkStatus(self):
+        # Check status of all APIs
         status={}
         for apiservice in (hereAPI,googleAPI):
             status[apiservice.API] = apiservice.getLocation("Canada")
         return status
+    
+class Location():
+    """ Location class with status and message attributes """
+    status = -1
+    message = ""
+    location = [0.,0.]
+    
+    def __init__(self,status,message,location = None):
+        self.status=status
+        self.message=message
+        if not location is None:
+            self.location = location
 
 """ These are the getLocation() function implementations for each of the
 APIs (HERE, Google). You can add additional APIs by implementing them below
@@ -40,19 +54,17 @@ class hereAPI():
             response = json.loads(urllib.request.urlopen(request).read().decode())
         except:
             #ERROR: url request failed
-            printError('URLRequest',self.API)
-            return -1
+            return Location(-1,constructError('URLRequest',self.API))
         
         # Get first location
         if (not response['Response']['View'] 
                 or not response['Response']['View'][0]['Result']):
             #ERROR: invalid address
-            printError('InvalidAddress',self.API)
-            return -1
+            return Location(-1,constructError('InvalidAddress',self.API))
         
         # Return display location
         location = response['Response']['View'][0]['Result'][0]['Location']['DisplayPosition']        
-        return [location['Latitude'],location['Longitude']]
+        return Location(1,"OK",[location['Latitude'],location['Longitude']])
     
 class googleAPI():
     Key = "AIzaSyBwLb_44aG_osoWJWbP06qwtB2eJN4WbnE"
@@ -69,23 +81,21 @@ class googleAPI():
             response = json.loads(urllib.request.urlopen(request).read().decode())
         except:
             #ERROR: url request failed
-            printError('URLRequest',self.API)
-            return -1
+            return Location(-1,constructError('URLRequest',self.API))
         
         # Get first location
         if (not response['results'] 
                 or not response['results'][0]['geometry']):
             #ERROR: invalid address
-            printError('InvalidAddress',self.API)
-            return -1
+            return Location(-1,constructError('InvalidAddress',self.API))
         
         # Return display location
         location = response['results'][0]['geometry']['location']        
-        return [location['lat'],location['lng']]
+        return Location(1,"OK",[location['lat'],location['lng']])
     
-def printError(ID,API):
-    # Print relevant error
+def constructError(ID,API):
+    # Construct relevant error
     if ID == 'URLRequest':
-        print("ERROR: URL request failed ("+API+").")
+        return "ERROR: URL request failed ("+API+")."
     elif ID == 'InvalidAddress':
-        print("ERROR: Address could not be found ("+API+").")
+        return "ERROR: Address could not be found ("+API+")."
