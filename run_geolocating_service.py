@@ -8,9 +8,17 @@ if __name__ == "__main__":
     
     # Input arguments
     if(len(sys.argv)>1):
-        PORT = int(sys.argv[1])
+        try:
+            PORT = int(sys.argv[1])
+        except:
+            print("[PORT] must be an integer. Ex: 8000")
+            sys.exit()
     if(len(sys.argv)>2):
-        MIRROR_RESPONSES = bool(sys.argv[2])
+        try:
+            MIRROR_RESPONSES = bool(int(sys.argv[2]))
+        except:
+            print("[MIRROR_RESPONSES] must be an integer. Ex: 0/1")
+            sys.exit()
 
     # Create the server
     server = http.server.HTTPServer((HOST, PORT), GeocodingServiceHTTPRequestHandler)
