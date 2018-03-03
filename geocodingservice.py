@@ -1,4 +1,5 @@
 import http.server, json, threading, urllib
+from geolocationextractor import GeolocationExtractor
 
 class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     """ HTTP request handler for geocoding service """
@@ -36,47 +37,8 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         # Parse query for search string
         queries = urllib.parse.parse_qs(parsedUrl.query)
         if 'address' in queries:
-            print(hereAPI.getAddress(urllib.parse.quote_plus(queries['address'][0])))
+            searchString = urllib.parse.quote_plus(queries['address'][0])
+            print(GeolocationExtractor.getLocation(searchString))
         else:
             print(0)        
         self.wfile.write(json.dumps({"latitude": 0, "longitude": 0}).encode('utf-8'))
-        
-class hereAPI:
-    AppID = "JDbEcowPNIAmQcE95vNz"
-    AppCode = "09bySQ9I5aWOFiQGDbqbCQ"
-    
-    @classmethod
-    def getAddress(self,searchString):
-        requestString = "https://geocoder.cit.api.here.com/6.2/geocode.json" \
-                        + "?app_id=" + hereAPI.AppID \
-                        + "&app_code=" + hereAPI.AppCode \
-                        + "&searchtext=" + searchString
-        
-        request = urllib.request.Request(requestString)
-        
-        response = json.loads(urllib.request.urlopen(request).read().decode())
-        
-        # Get first location
-        if not response['Response']['View']:
-            #ERROR
-            return -1
-        elif not response['Response']['View'][0]['Result']:
-            #ERROR
-            return -1
-        
-        # Return display location
-        location = response['Response']['View'][0]['Result'][0]['Location']['DisplayPosition']        
-        return location
-    
-class googleAPI:
-    Key = "AIzaSyBwLb_44aG_osoWJWbP06qwtB2eJN4WbnE"
-    
-    @classmethod
-    def getAddress(self,searchString):
-        requestString = "https://maps.googleapis.com/maps/api/geocode/json" \
-                        + "?address=" + searchString \
-                        + "&key=" + self.Key
-        
-        request = urllib.request.Request(requestString)
-        
-        return urllib.request.urlopen(request).read().decode()
