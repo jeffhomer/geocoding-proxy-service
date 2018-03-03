@@ -1,6 +1,9 @@
 # Geocoding Proxy Service
 Network service that resolves latitude and longitude coordinates for a given address
 
+## Contents
+1. [Requirements](https://github.com/jeffhomer/geocoding-proxy-service/blob/master/README.md#requirements)
+
 ## Requirements
 Before using the geocoding proxy service, please ensure you are using Python 3.6.4, and that it is available on the system path.
 
