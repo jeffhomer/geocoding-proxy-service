@@ -15,14 +15,16 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.end_headers()
         
-        # Parse path for function call
+        # Call appropriate method
         parsedUrl = urllib.parse.urlparse(self.path)
         if parsedUrl.path == '/shut_down':
             self.serverShutdown()
         elif parsedUrl.path == '/search':       
             self.searchAddress(parsedUrl)
+        elif parsedUrl.path == '/check_api_status':
+            self.checkStatus()
         else:
-            self.wfile.write(json.dumps({"Error": "Did not recognize function. Please use /search to search for an address or /shut_down to shut down the server"}).encode('utf-8'))
+            self.wfile.write(json.dumps({"Message": "Did not recognize function. Please use /search to search for an address or /shut_down to shut down the server."}).encode('utf-8'))
 
     def serverShutdown(self):
         # Shut down server and notify client
@@ -31,7 +33,7 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         t = threading.Thread(target = self.server.shutdown)
         t.daemon = True
         t.start()
-        print("Server shutting down by " + clientAddress)
+        print("Server shut down by " + clientAddress)
         
     def searchAddress(self,parsedUrl):
         # Parse query for search string
@@ -49,3 +51,13 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"Message": "Could not retrieve location from any API. Please make sure you are connected to the internet."}).encode('utf-8'))
             return
         self.wfile.write(json.dumps({"latitude": location[0], "longitude": location[1]}).encode('utf-8'))
+        
+    def checkStatus(self):
+        status = GeolocationExtractor.checkStatus()
+        for api in status:
+            if status[api] == -1:
+                status_i = "ERROR"
+            else:
+                status_i = "OK"
+            status[api] = status_i
+        self.wfile.write(json.dumps(status).encode('utf-8'))
