@@ -45,6 +45,12 @@ This will return a JSON object with the form:
 }
 ```
 Ensure that ```SEARCHTEXT``` follows the regular encoding for URL queries; that is, spaces should be replaced by plus signs, and special characters by ```%xx``` escapes. You can use ```urllib.parse.quote_plus``` in python to encode a regular string accordingly.
+If one of the APIs locate the address successfully, the method will instead return a JSON message describing the error:
+```
+{
+    "Message": "Location could not be obtained using any of the implemented APIs. Ensure that you are connected to the internet."
+}
+```
 
 ### Stop server: 
 Use the ```shut_down``` method to shut down the service safely.
@@ -58,7 +64,7 @@ This will return a JSON-encoded message referencing the IP of the client that sh
 }
 ```
 
-### Check status of API services
+### Check status of API services:
 To verify that the calls to the HERE and Google APIs are successful, use the ```check_api_status``` method.
 ```
 http://localhost:PORT/check_api_status
