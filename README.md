@@ -27,7 +27,7 @@ To mirror the client responses to the geolocating service, pass ```1``` to the s
 > python run_geolocating_service [PORT] [MIRROR_RESPONSES]
 ```
 
-To shut down the service safely, send an external request to the server as described in [Stop server](https://github.com/jeffhomer/geocoding-proxy-service/blob/master/README.md#stop-server).
+To shut the service down safely, send an external request to the server as described in [Stop server](https://github.com/jeffhomer/geocoding-proxy-service/blob/master/README.md#stop-server).
 
 ## How to Use the Services API
 In the below examples, ```PORT``` refers to the port you set when running the service. If you did not select a port, the service uses a default port 8000.
@@ -45,7 +45,8 @@ This will return a JSON object with the form:
 }
 ```
 Ensure that ```SEARCHTEXT``` follows the regular encoding for URL queries; that is, spaces should be replaced by plus signs, and special characters by ```%xx``` escapes. You can use ```urllib.parse.quote_plus``` in python to encode a regular string accordingly.
-If one of the APIs locate the address successfully, the method will instead return a JSON message describing the error:
+
+If none of the APIs locate the address successfully, the method will instead return a JSON message describing the error:
 ```
 {
     "Message": "Location could not be obtained using any of the implemented APIs. Ensure that you are connected to the internet."
