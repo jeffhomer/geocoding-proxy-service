@@ -25,16 +25,14 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         elif parsedUrl.path == '/check_api_status':
             self.checkStatus()
         else:
-            self.wfile.write(json.dumps({"Message": "Did not recognize function. Please use /search to search for an address or /shut_down to shut down the server."}).encode('utf-8'))
+            self.respond({"Message": "Did not recognize function. Please use /search to search for an address or /shut_down to shut down the server."})
 
     def serverShutdown(self):
         # Shut down server and notify client
-        self.wfile.write(json.dumps({"Message":"Server shutting down."}).encode('utf-8'))
-        clientAddress = self.address_string()
+        self.respond({"Message":"Server shut down by " + self.address_string() + "."})
         t = threading.Thread(target = self.server.shutdown)
         t.daemon = True
         t.start()
-        print("Server shut down by " + clientAddress)
         
     def searchAddress(self,parsedUrl):
         # Get latitude and longitude of searched address
@@ -43,7 +41,7 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         queries = urllib.parse.parse_qs(parsedUrl.query)
         if not 'address' in queries:
             # ERROR: invalid query
-            self.wfile.write(json.dumps({"Message": "Invalid query. Please make sure to follow the format 'address=SEARCHTEXT' and that SEARCHTEXT is plus-encoded"}).encode('utf-8'))
+            self.respond({"Message": "Invalid query. Please make sure to follow the format 'address=SEARCHTEXT' and that SEARCHTEXT is plus-encoded"})
             return
         
         # Get location from one of the APIs
@@ -51,9 +49,9 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         location = GeolocationExtractor.getLocation(searchString)      
         if location.status == -1:
             # ERROR: cannot get location
-            self.wfile.write(json.dumps({"Message": "Location could not be obtained using any of the implemented APIs. Ensure that you are connected to the internet."}).encode('utf-8'))
+            self.respond({"Message": "Location could not be obtained using any of the implemented APIs. Ensure that you are connected to the internet."})
             return
-        self.wfile.write(json.dumps({"latitude": location.location[0], "longitude": location.location[1]}).encode('utf-8'))
+        self.respond({"latitude": location.location[0], "longitude": location.location[1]})
         
     def checkStatus(self):
         # Check status of all APIs
@@ -65,4 +63,10 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             else:
                 status_i = "OK"
             status[api] = status_i
-        self.wfile.write(json.dumps(status).encode('utf-8'))
+        self.respond(status)
+        
+    def respond(self,message):
+        # Respond to client
+        self.wfile.write(json.dumps(message).encode('utf-8'))
+        if self.server.mirror_responses:
+            print(message)
