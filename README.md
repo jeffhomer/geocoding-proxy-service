@@ -24,6 +24,8 @@ To set a password to secure external shutdown commands, use the second optional 
 ```
 > python run_geolocating_service.py [PORT] [PASSWORD]
 ```
+The password must be alphanumeric and exactly 4 characters in length.
+
 To mirror the client responses to the geolocating service, pass ```1``` to the third optional command-line argument ```[MIRROR_RESPONSES]```:
 ```
 > python run_geolocating_service.py [PORT] [PASSWORD] [MIRROR_RESPONSES]
