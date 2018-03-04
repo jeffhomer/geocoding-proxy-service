@@ -34,3 +34,4 @@ if __name__ == "__main__":
     # Run the server until shut down
     print("Geolocating service has been started.")
     server.serve_forever()
+    print("Geolocating service has been terminated.")
