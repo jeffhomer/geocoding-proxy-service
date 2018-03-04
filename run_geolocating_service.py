@@ -32,4 +32,5 @@ if __name__ == "__main__":
     server.password = PASSWORD
 
     # Run the server until shut down
+    print("Geolocating service has been started.")
     server.serve_forever()

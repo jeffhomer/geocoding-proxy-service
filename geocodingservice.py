@@ -56,7 +56,11 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.serverShutdown()
             return
         
-        data = json.loads(postBody)
+        try:
+            data = json.loads(postBody)
+        except:
+            self.respond({"Message":"Invalid control character in request body. Please reconstruct your request and try again."})
+            return
         if (not 'password' in data) or (not data['password'] == self.server.password):
             self.respond({"Message": "Invalid password. Ensure that your request body includes the password set by your server administrator."})
         else:
