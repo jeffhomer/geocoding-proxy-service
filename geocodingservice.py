@@ -19,21 +19,48 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         
         # Parse url and call appropriate method
         parsedUrl = urllib.parse.urlparse(self.path)
-        if parsedUrl.path == '/shut_down':
-            self.serverShutdown()
-        elif parsedUrl.path == '/search':       
+        if parsedUrl.path == '/search':       
             self.searchAddress(parsedUrl)
         elif parsedUrl.path == '/check_api_status':
             self.checkStatus()
         else:
-            self.respond({"Message": "Did not recognize function. Please use /search to search for an address or /shut_down to shut down the server."})
+            self.respond({"Message": "Did not recognize function. Please use /search to search for an address or /check_api_status to verify connection with external APIs."})
 
+    # Respond to a POST request
+    def do_POST(self):
+        self.send_response(200)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        
+        # Make sure content length is included in header
+        if not ('Content-Length' in self.headers):
+            self.respond({"Message": "Header 'Content-Length' not found. Ensure that clients include this in PUT requests."})
+            return
+        
+        # Parse url and call appropriate method
+        parsedUrl = urllib.parse.urlparse(self.path)
+        if parsedUrl.path == '/shut_down':
+            self.serverShutdownSecure(self.rfile.read(int(self.headers['Content-Length'])))
+    
     # Shut down server and notify client
     def serverShutdown(self):
         self.respond({"Message":"Server shut down by " + self.address_string() + "."})
         t = threading.Thread(target = self.server.shutdown)
         t.daemon = True
         t.start()
+        
+    # Secure shutdown
+    def serverShutdownSecure(self,postBody):
+        # If no password, shut down
+        if(not self.server.password):
+            self.serverShutdown()
+            return
+        
+        data = json.loads(postBody)
+        if (not 'password' in data) or (not data['password'] == self.server.password):
+            self.respond({"Message": "Invalid password. Ensure that your request body includes the password set by your server administrator."})
+        else:
+            self.serverShutdown()
         
     # Get latitude and longitude of searched address
     def searchAddress(self,parsedUrl):
