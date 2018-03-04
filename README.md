@@ -16,15 +16,17 @@ To run the geolocating service using default port 8000, call run_geolocating_ser
 ```
 > python run_geolocating_service.py
 ```
-
 To select the port, use the first optional command-line argument ```[PORT]```:
 ```
 > python run_geolocating_service.py [PORT]
 ```
-
-To mirror the client responses to the geolocating service, pass ```1``` to the second optional command-line argument ```[MIRROR_RESPONSES]```:
+To set a password to secure external shutdown commands, use the second optional command-line argument ```[PASSWORD]```:
 ```
-> python run_geolocating_service.py [PORT] [MIRROR_RESPONSES]
+> python run_geolocating_service.py [PORT] [PASSWORD]
+```
+To mirror the client responses to the geolocating service, pass ```1``` to the third optional command-line argument ```[MIRROR_RESPONSES]```:
+```
+> python run_geolocating_service.py [PORT] [PASSWORD] [MIRROR_RESPONSES]
 ```
 
 To shut the service down safely, send an external request to the server as described in [Stop server](https://github.com/jeffhomer/geocoding-proxy-service/blob/master/README.md#stop-server).
@@ -33,7 +35,7 @@ To shut the service down safely, send an external request to the server as descr
 In the below examples, ```PORT``` refers to the port you set when running the service. If you did not select a port, the service uses a default port 8000.
 
 ### Search address:
-Use the ```search``` method to search for an address specified by ```SEARCHTEXT```. The service will first try to use the HERE API, and if that fails, will switch to the Google API. 
+Use the ```search``` method in a GET request to search for an address specified by ```SEARCHTEXT```. The service will first try to use the HERE API, and if that fails, will switch to the Google API. 
 ```
 http://localhost:PORT/search?address=SEARCHTEXT
 ```
@@ -53,20 +55,8 @@ If none of the APIs locate the address successfully, the method will instead ret
 }
 ```
 
-### Stop server: 
-Use the ```shut_down``` method to shut down the service safely.
-```
-http://localhost:PORT/shut_down
-```
-This will return a JSON-encoded message referencing the IP of the client that shut down the service:
-```
-{
-    "Message": "Server shut down by 127.0.0.1."
-}
-```
-
 ### Check status of API services:
-To verify that the calls to the HERE and Google APIs are successful, use the ```check_api_status``` method.
+To verify that the calls to the HERE and Google APIs are successful, use the ```check_api_status``` method in a GET request.
 ```
 http://localhost:PORT/check_api_status
 ```
@@ -84,4 +74,22 @@ If any of the APIs are consistently failing, you may need to regenerate the API 
 class googleAPI():
     Key = "IaMaRaNdOmLyGeNeRaTeDkEy"
     API = 'Google'
+```
+
+### Stop server: 
+Use the ```shut_down``` method in a PUT request to shut down the service safely.
+```
+http://localhost:PORT/shut_down
+```
+The header must include the standard ```'Content-Length'```. If you set a password when creating the server, it must be included in the JSON-formatted request body:
+```
+{
+	"password" : "1234"
+}
+```
+If successful, the service will return a JSON-encoded message referencing the IP of the client before shutting down:
+```
+{
+    "Message": "Server shut down by 127.0.0.1."
+}
 ```
