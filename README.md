@@ -83,5 +83,5 @@ If any of the APIs are consistently failing, you may need to regenerate the API 
 # If you regenerate the Google API Key, set the Key attribute appropriately
 class googleAPI():
     Key = "IaMaRaNdOmLyGeNeRaTeDkEy"
-```
     API = 'Google'
+```
