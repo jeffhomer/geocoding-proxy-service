@@ -1,22 +1,23 @@
 import http.server, json, threading, urllib
 from geolocationextractor import GeolocationExtractor
 
+### HTTP request handler for geocoding service ###
 class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
-    """ HTTP request handler for geocoding service """
-
+    
+    ## Respond to a HEAD request ##
     def do_HEAD(self):
         # Respond to a HEAD request
         self.send_response(200)
         self.send_header("Content-type", "application/json")
         self.end_headers()
-        
+              
+    # Respond to a GET request
     def do_GET(self):
-        # Respond to a GET request
         self.send_response(200)
         self.send_header("Content-type", "application/json")
         self.end_headers()
         
-        # Call appropriate method
+        # Parse url and call appropriate method
         parsedUrl = urllib.parse.urlparse(self.path)
         if parsedUrl.path == '/shut_down':
             self.serverShutdown()
@@ -27,16 +28,15 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         else:
             self.respond({"Message": "Did not recognize function. Please use /search to search for an address or /shut_down to shut down the server."})
 
+    # Shut down server and notify client
     def serverShutdown(self):
-        # Shut down server and notify client
         self.respond({"Message":"Server shut down by " + self.address_string() + "."})
         t = threading.Thread(target = self.server.shutdown)
         t.daemon = True
         t.start()
         
+    # Get latitude and longitude of searched address
     def searchAddress(self,parsedUrl):
-        # Get latitude and longitude of searched address
-        
         # Parse query for search string
         queries = urllib.parse.parse_qs(parsedUrl.query)
         if not 'address' in queries:
@@ -53,8 +53,8 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             return
         self.respond({"latitude": location.location[0], "longitude": location.location[1]})
         
+    # Check status of all implemented APIs
     def checkStatus(self):
-        # Check status of all APIs
         location = GeolocationExtractor.checkStatus()
         status={}
         for api in location:
@@ -65,8 +65,8 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             status[api] = status_i
         self.respond(status)
         
+    # Respond to client and mirror to server if MIRROR_RESPONSES is true
     def respond(self,message):
-        # Respond to client
         self.wfile.write(json.dumps(message).encode('utf-8'))
         if self.server.mirror_responses:
             print(message)

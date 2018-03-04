@@ -1,6 +1,6 @@
 import http.server, sys
 from geocodingservice import GeocodingServiceHTTPRequestHandler
-        
+
 if __name__ == "__main__":
     HOST = "localhost"
     PORT = 8000
