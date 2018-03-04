@@ -17,12 +17,12 @@ To run the geolocating service using default port 8000, call run_geolocating_ser
 > python run_geolocating_service.py
 ```
 
-To select the port, use the first optional command-line argument [PORT]:
+To select the port, use the first optional command-line argument ```[PORT]```:
 ```
 > python run_geolocating_service.py [PORT]
 ```
 
-To mirror the client responses to the geolocating service, pass ```1``` to the second optional command-line argument [MIRROR_RESPONSES]:
+To mirror the client responses to the geolocating service, pass ```1``` to the second optional command-line argument ```[MIRROR_RESPONSES]```:
 ```
 > python run_geolocating_service.py [PORT] [MIRROR_RESPONSES]
 ```
@@ -77,3 +77,11 @@ This will return a JSON-encoded status with the form:
     "Google": "FAILED"
 }
 ```
+If any of the APIs are consistently failing, you may need to regenerate the API key(s). Once you have a regenerated or working key, you can modify the attribute in the appropriate API class in **geolocationextractor.py**. For example, for the Google API, look for the class ```googleAPI```:
+```
+### Google API ###
+# If you regenerate the Google API Key, set the Key attribute appropriately
+class googleAPI():
+    Key = "IaMaRaNdOmLyGeNeRaTeDkEy"
+```
+    API = 'Google'
