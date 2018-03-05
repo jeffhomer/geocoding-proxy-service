@@ -19,12 +19,12 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         
         # Parse url and call appropriate method
         parsedUrl = urllib.parse.urlparse(self.path)
-        if parsedUrl.path == '/search':       
+        if parsedUrl.path == '/geolocator/search':       
             self.searchAddress(parsedUrl)
-        elif parsedUrl.path == '/check_api_status':
+        elif parsedUrl.path == '/geolocator/check_api_status':
             self.checkStatus()
         else:
-            self.respond({"Message": "Did not recognize function. Please use /search to search for an address or /check_api_status to verify connection with external APIs."})
+            self.respond({"Message": "Did not recognize GET function. Please use /geolocator/search to search for an address or /geolocator/check_api_status to verify connection with external APIs."})
 
     # Respond to a POST request
     def do_POST(self):
@@ -39,8 +39,11 @@ class GeocodingServiceHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         
         # Parse url and call appropriate method
         parsedUrl = urllib.parse.urlparse(self.path)
-        if parsedUrl.path == '/shut_down':
+        if parsedUrl.path == '/geolocator/shut_down':
             self.serverShutdownSecure(self.rfile.read(int(self.headers['Content-Length'])))
+        else:
+            self.respond({"Message": "Did not recognize POST function."})
+
     
     # Shut down server and notify client
     def serverShutdown(self):
