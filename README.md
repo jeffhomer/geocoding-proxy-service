@@ -34,12 +34,15 @@ To mirror the client responses to the geolocating service, pass ```1``` to the t
 To shut the service down safely, send an external request to the server as described in [Stop server](https://github.com/jeffhomer/geocoding-proxy-service/blob/master/README.md#stop-server).
 
 ## How to Use the Services API
-In the below examples, ```PORT``` refers to the port you set when running the service. If you did not select a port, the service uses a default port 8000.
+In the below examples, ```PORT``` refers to the port you set when running the service. If you did not select a port, the service uses a default port 8000. All requests should be made to:
+```
+http://localhost:PORT/geolocator/[METHODNAME]
+```
 
 ### Search address:
 Use the ```search``` method in a GET request to search for an address specified by ```SEARCHTEXT```. The service will first try to use the HERE API, and if that fails, will switch to the Google API. 
 ```
-http://localhost:PORT/search?address=SEARCHTEXT
+http://localhost:PORT/geolocator/search?address=SEARCHTEXT
 ```
 This will return a JSON object with the form:
 ```
@@ -60,7 +63,7 @@ If none of the APIs locate the address successfully, the method will instead ret
 ### Check status of API services:
 To verify that the calls to the HERE and Google APIs are successful, use the ```check_api_status``` method in a GET request.
 ```
-http://localhost:PORT/check_api_status
+http://localhost:PORT/geolocator/check_api_status
 ```
 This will return a JSON-encoded status with the form:
 ```
@@ -81,7 +84,7 @@ class googleAPI():
 ### Stop server: 
 Use the ```shut_down``` method in a PUT request to shut down the service safely.
 ```
-http://localhost:PORT/shut_down
+http://localhost:PORT/geolocator/shut_down
 ```
 The header must include the standard ```'Content-Length'```. If you set a password when creating the server, it must be included in the JSON-formatted request body:
 ```
