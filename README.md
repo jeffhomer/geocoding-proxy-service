@@ -82,7 +82,7 @@ class googleAPI():
 ```
 
 ### Stop server: 
-Use the ```shut_down``` method in a PUT request to shut down the service safely.
+Use the ```shut_down``` method in a POST request to shut down the service safely.
 ```
 http://localhost:PORT/geolocator/shut_down
 ```
