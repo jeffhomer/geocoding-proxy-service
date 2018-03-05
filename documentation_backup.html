@@ -67,7 +67,7 @@ class googleAPI():
     API = 'Google'
 </code></pre>
 <h3><a id="Stop_server_80"></a>Stop server:</h3>
-<p>Use the <code>shut_down</code> method in a PUT request to shut down the service safely.</p>
+<p>Use the <code>shut_down</code> method in a POST request to shut down the service safely.</p>
 <pre><code>http://localhost:PORT/geolocator/shut_down
 </code></pre>
 <p>The header must include the standard <code>'Content-Length'</code>. If you set a password when creating the server, it must be included in the JSON-formatted request body:</p>
